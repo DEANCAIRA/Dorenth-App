@@ -111,7 +111,9 @@ if selected_metric:
             st.plotly_chart(fig, use_container_width=True)
 
         with tab2:
-            pivot = plot_df.pivot(index="Year", columns="Company", values="Value")
+            pivot = plot_df.drop_duplicates(subset=["Year", "Company"]).pivot(
+                index="Year", columns="Company", values="Value"
+            )
             st.dataframe(pivot, use_container_width=True)
             csv = pivot.to_csv()
             st.download_button(
