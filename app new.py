@@ -69,7 +69,7 @@ def extract_metric(df, metric_name):
     years = []
     for i in range(10):  # Try first 10 rows
         row_values = df.iloc[i, 2:].tolist()
-        numeric_years = pd.to_numeric(row_values, errors="coerce")
+        numeric_years = pd.Series(pd.to_numeric(row_values, errors="coerce"))
         if numeric_years.notna().sum() >= 2:  # at least 2 numbers found
             years = [str(int(y)) if not pd.isna(y) else "" for y in numeric_years]
             break
