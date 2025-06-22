@@ -8,21 +8,28 @@ def extract_numeric_year_columns(df):
 
 # Locate the EBITDA row from column index 1, then extract value from selected year column
 def extract_ebitda(df, company_name, year):
-    # Ensure headers are strings
+    # Normalize columns
     df.columns = [str(col).split(".")[0] for col in df.columns]
-    
-    # Match "EBITDA" in second column
-    ebitda_row = df[df.iloc[:, 1].astype(str).str.upper().str.contains("EBITDA", na=False)]
+
+    # DEBUG: Show values in 2nd column
+    st.write(f"🔎 Checking '{company_name}' column 2 values for 'EBITDA':")
+    st.dataframe(df.iloc[:, 1].dropna().astype(str).str.upper().head(20))
+
+    # Match "EBITDA"
+    match = df.iloc[:, 1].astype(str).str.upper().str.contains("EBITDA", na=False)
+    ebitda_row = df[match]
+
+    st.write(f"📌 EBITDA matches found: {match.sum()} rows")
 
     if ebitda_row.empty:
         return (company_name, "EBITDA not found")
 
-    # Extract the value for the selected year
     try:
         value = ebitda_row[year].values[0]
         return (company_name, value)
-    except Exception:
-        return (company_name, f"No value found for {year}")
+    except Exception as e:
+        return (company_name, f"Year column not found or error: {e}")
+
 
 def main():
     st.set_page_config(page_title="EBITDA Extractor", layout="wide")
