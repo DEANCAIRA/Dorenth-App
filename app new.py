@@ -66,13 +66,16 @@ def extract_metric(df, metric_name):
     df[1] = df[1].astype(str)
 
     # Auto-detect year row
-    for i in range(5):
+    years = []
+    for i in range(10):  # Try first 10 rows
         row_values = df.iloc[i, 2:].tolist()
-        if all(isinstance(v, (int, float)) or str(v).startswith("20") for v in row_values):
-            years = [str(int(v)) if isinstance(v, (int, float)) and not pd.isna(v) else str(v) for v in row_values]
+        numeric_years = pd.to_numeric(row_values, errors="coerce")
+        if numeric_years.notna().sum() >= 2:  # at least 2 numbers found
+            years = [str(int(y)) if not pd.isna(y) else "" for y in numeric_years]
             break
-    else:
-        years = [f"Year {i}" for i in range(1, df.shape[1] - 2 + 1)]
+
+    if not years:
+        years = [f"Year {i}" for i in range(1, df.shape[1] - 1)]
 
     match_row = df[df[1].str.lower().str.strip() == metric_name.lower().strip()]
     if not match_row.empty:
@@ -125,7 +128,6 @@ if selected_metric:
             st.plotly_chart(fig, use_container_width=True)
 
         with tab2:
-            # ✅ FIXED: pivot_table avoids duplicate errors
             pivot = plot_df.pivot_table(index="Year", columns="Company", values="Value", aggfunc="first")
             st.dataframe(pivot, use_container_width=True)
             csv = pivot.to_csv()
