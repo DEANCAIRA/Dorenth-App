@@ -79,3 +79,60 @@ def extract_metric(df, metric_name):
         values = match_row.iloc[0, 2:].tolist()
         return pd.DataFrame({"Year": years, "Value": values})
     else:
+        return pd.DataFrame({"Year": years, "Value": [None] * len(years)})
+
+# --- Metric Selection ---
+st.header("2. Select Metrics to Compare")
+all_metrics = get_available_metrics(company_data)
+search_input = st.text_input("Search for a metric (e.g., EBITDA, Revenue, Profit)").lower()
+filtered_metrics = [m for m in all_metrics if search_input in m]
+selected_metric = st.selectbox(
+    "Select a metric to compare",
+    options=filtered_metrics if filtered_metrics else all_metrics
+)
+
+# --- Comparison View ---
+if selected_metric:
+    st.header(f"3. Comparison of '{selected_metric.upper()}'")
+    tab1, tab2 = st.tabs(["Chart View", "Table View"])
+    plot_df = pd.DataFrame()
+
+    for name, df in company_data.items():
+        extracted = extract_metric(df, selected_metric)
+        if not extracted.empty:
+            extracted["Company"] = name
+            plot_df = pd.concat([plot_df, extracted])
+
+    if not plot_df.empty:
+        plot_df["Year"] = plot_df["Year"].astype(str)
+
+        # Optional Year Filter
+        available_years = sorted(plot_df["Year"].dropna().unique())
+        selected_years = st.multiselect("Filter by year (optional)", options=available_years, default=available_years)
+        plot_df = plot_df[plot_df["Year"].isin(selected_years)]
+
+        with tab1:
+            fig = px.line(
+                plot_df,
+                x="Year", y="Value", color="Company", markers=True,
+                title=f"{selected_metric.upper()} Comparison"
+            )
+            fig.update_layout(
+                xaxis_title="Year",
+                yaxis_title=selected_metric.upper(),
+                legend_title="Company"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
+        with tab2:
+            pivot = plot_df.pivot(index="Year", columns="Company", values="Value")
+            st.dataframe(pivot, use_container_width=True)
+            csv = pivot.to_csv()
+            st.download_button(
+                label="Download data as CSV",
+                data=csv,
+                file_name=f"{selected_metric}_comparison.csv",
+                mime="text/csv"
+            )
+    else:
+        st.warning("No matching data found across uploaded files.")
