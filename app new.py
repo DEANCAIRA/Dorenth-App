@@ -64,63 +64,18 @@ def get_available_metrics(dataframes):
 
 def extract_metric(df, metric_name):
     df[1] = df[1].astype(str)
-    years = df.iloc[1, 2:].tolist()
-    row = df[df[1].str.lower().str.strip() == metric_name.lower().strip()]
-    if not row.empty:
-        values = row.iloc[0, 2:].tolist()
+
+    # Auto-detect year row
+    for i in range(5):
+        row_values = df.iloc[i, 2:].tolist()
+        if all(isinstance(v, (int, float)) or str(v).startswith("20") for v in row_values):
+            years = [str(int(v)) if isinstance(v, (int, float)) and not pd.isna(v) else str(v) for v in row_values]
+            break
+    else:
+        years = [f"Year {i}" for i in range(1, df.shape[1] - 2 + 1)]
+
+    match_row = df[df[1].str.lower().str.strip() == metric_name.lower().strip()]
+    if not match_row.empty:
+        values = match_row.iloc[0, 2:].tolist()
         return pd.DataFrame({"Year": years, "Value": values})
     else:
-        return pd.DataFrame({"Year": years, "Value": [None] * len(years)})
-
-# --- Metric Selection ---
-st.header("2. Select Metrics to Compare")
-all_metrics = get_available_metrics(company_data)
-search_input = st.text_input("Search for a metric (e.g., EBITDA, Revenue, Profit)").lower()
-filtered_metrics = [m for m in all_metrics if search_input in m]
-selected_metric = st.selectbox(
-    "Select a metric to compare",
-    options=filtered_metrics if filtered_metrics else all_metrics
-)
-
-# --- Comparison View ---
-if selected_metric:
-    st.header(f"3. Comparison of '{selected_metric.upper()}'")
-    tab1, tab2 = st.tabs(["Chart View", "Table View"])
-    plot_df = pd.DataFrame()
-
-    for name, df in company_data.items():
-        extracted = extract_metric(df, selected_metric)
-        if not extracted.empty:
-            extracted["Company"] = name
-            plot_df = pd.concat([plot_df, extracted])
-
-    if not plot_df.empty:
-        plot_df["Year"] = plot_df["Year"].astype(str)
-
-        with tab1:
-            fig = px.line(
-                plot_df,
-                x="Year", y="Value", color="Company", markers=True,
-                title=f"{selected_metric.upper()} Comparison"
-            )
-            fig.update_layout(
-                xaxis_title="Year",
-                yaxis_title=selected_metric.upper(),
-                legend_title="Company"
-            )
-            st.plotly_chart(fig, use_container_width=True)
-
-        with tab2:
-            pivot = plot_df.drop_duplicates(subset=["Year", "Company"]).pivot(
-                index="Year", columns="Company", values="Value"
-            )
-            st.dataframe(pivot, use_container_width=True)
-            csv = pivot.to_csv()
-            st.download_button(
-                label="Download data as CSV",
-                data=csv,
-                file_name=f"{selected_metric}_comparison.csv",
-                mime="text/csv"
-            )
-    else:
-        st.warning("No matching data found across uploaded files.")
