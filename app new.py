@@ -215,28 +215,38 @@ def get_available_metrics(dataframes):
     return sorted(metrics)
 
 def extract_metric(df, metric_name):
-    if df.empty or len(df.columns) < 3:
+    if df.empty or df.shape[1] < 3:
         return pd.DataFrame({"Year": [], "Value": []})
 
-    df[1] = df[1].astype(str)  # ensure metric column is string for matching
-
-    # ✅ Correct year extraction from column 1 (row 2 and downward)
-    years = [str(int(df.iloc[i, 1])) for i in range(2, len(df)) if pd.notna(df.iloc[i, 1])]
-
-    # ✅ Find the metric's column index (row 0)
+    # Find the metric's column index from header row (row index 0)
     metric_col = None
     for col in range(2, df.shape[1]):
-        if str(df.iloc[0, col]).lower().strip() == metric_name.lower().strip():
+        header = str(df.iloc[0, col]).lower().strip()
+        if header == metric_name.lower().strip():
             metric_col = col
             break
 
     if metric_col is None:
-        return pd.DataFrame({"Year": years, "Value": [None] * len(years)})
+        return pd.DataFrame({"Year": [], "Value": []})
 
-    # ✅ Extract values vertically for that metric
-    values = [df.iloc[i, metric_col] for i in range(2, len(df))]
+    # Extract years from column 1 (index 1), rows 2 to end
+    years = []
+    values = []
 
-    return pd.DataFrame({"Year": years[:len(values)], "Value": values[:len(years)]})
+    for i in range(2, len(df)):
+        year_cell = df.iloc[i, 1]
+        value_cell = df.iloc[i, metric_col]
+
+        if pd.notna(year_cell):
+            try:
+                year = str(int(float(year_cell)))  # handles 2020.0
+                years.append(year)
+                values.append(value_cell)
+            except:
+                continue
+
+    return pd.DataFrame({"Year": years, "Value": values})
+
 
 # --- Continue only if we have data ---
 if company_data:
