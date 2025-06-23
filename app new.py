@@ -546,4 +546,4 @@ if company_data and data_source == "Use Indonesian Companies Data":
 
 # --- Footer ---
 st.markdown("---")
-st.markdown("🇮🇩 **Indonesian Companies Financial Analysis** | Data includes top IDX listed companies")
+st.markdown("🇮🇩 **Indonesian Companies Financial Analysis** | Data includes top IDX listed companies | Built with Streamlit & Plotly")
