@@ -196,14 +196,6 @@ else:
         st.info("Please upload Excel files to proceed with custom data.")
 
 # --- Metric Extraction Logic ---
-def get_available_metrics(dataframes):
-    metrics = set()
-    for df in dataframes.values():
-        if len(df.columns) > 1:
-            labels = df[1].astype(str).str.lower().str.strip().tolist()
-            metrics.update([m for m in labels if m and m not in ['year', '', 'nan']])
-    return sorted(metrics)
-
 def extract_metric(df, metric_name):
     if df.empty or len(df.columns) < 3:
         return pd.DataFrame({"Year": [], "Value": []})
