@@ -230,7 +230,6 @@ def extract_metric(df, metric_name):
             "Year": years,
             "Value": [None] * len(years)
         })
-
 # --- Continue only if we have data ---
 if company_data:
     # --- Metric Selection ---
