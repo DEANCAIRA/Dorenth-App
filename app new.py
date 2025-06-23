@@ -313,7 +313,7 @@ if company_data:
                         plot_df = plot_df[plot_df["Company"].isin(selected_companies)]
 
                     # Create tabs for different views
-                    tab1, tab2, tab3, tab4 = st.tabs(["📈 Chart View", "📊 Table View", "📋 Summary", "🏆 Rankings"])
+                    tab1, tab2, tab3, tab4, tab5 = st.tabs(["📈 Chart View", "📊 Table View", "📋 Summary", "🏆 Rankings", "🔍 Quick Recall"])
 
                     with tab1:
                         fig = px.line(
@@ -390,6 +390,77 @@ if company_data:
                                     st.write(f"{row['Rank']}. **{row['Company']}**: {row['Value']:.2f}")
                         else:
                             st.info("No 2024 data available for ranking.")
+
+                    with tab5:
+                        # Quick Recall - Show all companies for selected metric
+                        st.subheader(f"Quick Recall: {selected_metric.upper()} for All Companies")
+                        
+                        # Create a comprehensive view
+                        recall_data = pd.DataFrame()
+                        for name, df in company_data.items():
+                            extracted = extract_metric(df, selected_metric)
+                            if not extracted.empty:
+                                clean_name = name.replace("PT_", "").replace("_", " ")
+                                extracted["Company"] = clean_name
+                                recall_data = pd.concat([recall_data, extracted], ignore_index=True)
+                        
+                        if not recall_data.empty:
+                            recall_data["Year"] = recall_data["Year"].astype(str)
+                            recall_data["Value"] = pd.to_numeric(recall_data["Value"], errors="coerce")
+                            recall_data = recall_data.dropna(subset=["Value"])
+                            
+                            # Year selector for quick recall
+                            recall_year = st.selectbox(
+                                "Select year for quick recall:",
+                                options=sorted(recall_data["Year"].unique(), reverse=True),
+                                key="recall_year"
+                            )
+                            
+                            year_data = recall_data[recall_data["Year"] == recall_year].copy()
+                            
+                            if not year_data.empty:
+                                # Sort by value (highest first)
+                                year_data = year_data.sort_values("Value", ascending=False).reset_index(drop=True)
+                                
+                                st.write(f"**{selected_metric.upper()} for all companies in {recall_year}:**")
+                                
+                                # Display in a clean format
+                                for idx, row in year_data.iterrows():
+                                    col1, col2 = st.columns([3, 1])
+                                    with col1:
+                                        st.write(f"**{row['Company']}**")
+                                    with col2:
+                                        # Format the value based on metric type
+                                        if "%" in selected_metric:
+                                            st.write(f"{row['Value']:.2f}%")
+                                        elif selected_metric.lower() in ['ebitda', 'revenue', 'net income', 'total assets', 'total debt']:
+                                            st.write(f"{row['Value']:.2f}T IDR")
+                                        else:
+                                            st.write(f"{row['Value']:.2f}")
+                                
+                                # Add some statistics
+                                st.markdown("---")
+                                col1, col2, col3 = st.columns(3)
+                                with col1:
+                                    st.metric("Highest", f"{year_data['Value'].max():.2f}")
+                                with col2:
+                                    st.metric("Average", f"{year_data['Value'].mean():.2f}")
+                                with col3:
+                                    st.metric("Lowest", f"{year_data['Value'].min():.2f}")
+                                
+                                # Show all years data in expandable section
+                                with st.expander(f"View {selected_metric.upper()} for all years"):
+                                    pivot_recall = recall_data.pivot_table(
+                                        index="Company", 
+                                        columns="Year", 
+                                        values="Value", 
+                                        aggfunc="first"
+                                    )
+                                    st.dataframe(pivot_recall, use_container_width=True)
+                            else:
+                                st.warning(f"No data available for {recall_year}")
+                        else:
+                            st.warning("No data available for quick recall.")
                 else:
                     st.warning("⚠️ No valid numerical data found for the selected metric and filters.")
             else:
