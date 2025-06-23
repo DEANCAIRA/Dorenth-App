@@ -207,49 +207,66 @@ else:
 
 # --- Metric Extraction Logic ---
 def get_available_metrics(dataframes):
+    """Extract available metrics from all dataframes"""
     metrics = set()
     for df in dataframes.values():
         if len(df.columns) > 1:
-            labels = df[1].astype(str).str.lower().str.strip().tolist()
+            # Get metrics from row 1 (header row) excluding 'Year' and empty values
+            labels = df.iloc[1, 2:].astype(str).str.lower().str.strip().tolist()
             metrics.update([m for m in labels if m and m not in ['year', '', 'nan']])
     return sorted(metrics)
 
 def extract_metric(df, metric_name):
-    if df.empty or len(df.columns) < 3:
+    """Extract metric data with years from the dataframe"""
+    if df.empty or len(df.shape) < 2:
         return pd.DataFrame({"Year": [], "Value": []})
-
-    # Ensure column 1 is string for searching metric names
-    df[1] = df[1].astype(str)
-
-    # Try to locate the year row by searching for numeric-only values in any row
-    year_row = None
-    for i in range(len(df)):
-        possible_years = df.iloc[i, 2:]
-        if all(pd.notna(x) and str(x).isdigit() for x in possible_years):
-            year_row = df.iloc[i, 2:]
-            break
-
-    if year_row is None:
-        # Fallback: assume row 2 is the year row (for embedded data)
-        year_row = df.iloc[2, 2:]
-
-    # Safely convert year row to string years
-    years = [str(int(y)) for y in year_row if pd.notna(y) and str(y).isdigit()]
-
-    # Try to find the matching metric row
-    match = df[df[1].str.lower().str.strip() == metric_name.lower().strip()]
-    if not match.empty:
-        values = match.iloc[0, 2:].tolist()
-        min_len = min(len(years), len(values))
-        return pd.DataFrame({
-            "Year": years[:min_len],
-            "Value": values[:min_len]
-        })
-    else:
+    
+    try:
+        # Get years from column 1, rows 2-6 (where the actual data is)
+        years = []
+        values = []
+        
+        # Find the metric row by checking row 1 (header row)
+        metric_col_idx = None
+        header_row = df.iloc[1].astype(str).str.lower().str.strip()
+        
+        for col_idx, header in enumerate(header_row):
+            if header == metric_name.lower().strip():
+                metric_col_idx = col_idx
+                break
+        
+        if metric_col_idx is None:
+            # Try to find in row 0 as backup
+            header_row = df.iloc[0].astype(str).str.lower().str.strip()
+            for col_idx, header in enumerate(header_row):
+                if header == metric_name.lower().strip():
+                    metric_col_idx = col_idx
+                    break
+        
+        if metric_col_idx is not None:
+            # Extract years and values from rows 2-6
+            for row_idx in range(2, min(7, len(df))):  # rows 2-6 contain the data
+                if row_idx < len(df):
+                    year_val = df.iloc[row_idx, 1]  # Year is in column 1
+                    metric_val = df.iloc[row_idx, metric_col_idx]  # Metric value in the found column
+                    
+                    if pd.notna(year_val) and pd.notna(metric_val):
+                        try:
+                            year = int(float(year_val))
+                            value = float(metric_val)
+                            years.append(str(year))
+                            values.append(value)
+                        except (ValueError, TypeError):
+                            continue
+        
         return pd.DataFrame({
             "Year": years,
-            "Value": [None] * len(years)
+            "Value": values
         })
+        
+    except Exception as e:
+        st.error(f"Error extracting metric {metric_name}: {e}")
+        return pd.DataFrame({"Year": [], "Value": []})
 
 # --- Continue only if we have data ---
 if company_data:
