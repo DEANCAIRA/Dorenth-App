@@ -218,7 +218,7 @@ def extract_metric(df, metric_name):
         
         # Find the metric row by checking row 1 (header row)
         metric_col_idx = None
-        header_row = df.iloc[2].astype(str).str.lower().str.strip()
+        header_row = df.iloc[1].astype(str).str.lower().str.strip()
         
         for col_idx, header in enumerate(header_row):
             if header == metric_name.lower().strip():
