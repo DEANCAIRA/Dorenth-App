@@ -235,7 +235,7 @@ def extract_metric(df, metric_name):
         
         if metric_col_idx is not None:
             # Extract years and values from rows 2-6
-            for row_idx in range(2, min(7, len(df))):  # rows 1-5 contain the data
+            for row_idx in range(1, min(5, len(df))):  # rows 1-5 contain the data
                 if row_idx < len(df):
                     year_val = df.iloc[row_idx, 1]  # Year is in column 1
                     metric_val = df.iloc[row_idx, metric_col_idx]  # Metric value in the found column
