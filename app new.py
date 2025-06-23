@@ -215,33 +215,24 @@ def get_available_metrics(dataframes):
     return sorted(metrics)
 
 def extract_metric(df, metric_name):
-    if df.empty or len(df.columns) < 2:
+    if df.empty or len(df.columns) < 3:
         return pd.DataFrame({"Year": [], "Value": []})
-    
+
     df[1] = df[1].astype(str)
 
-    # Auto-detect year row
-    years = []
-    for i in range(min(10, len(df))):
-        if i < len(df):
-            row_values = df.iloc[i, 2:].tolist() if len(df.columns) > 2 else []
-            if row_values:
-                numeric_years = pd.Series(pd.to_numeric(row_values, errors="coerce"))
-                if numeric_years.notna().sum() >= 2:
-                    years = [str(int(y)) if not pd.isna(y) else "" for y in numeric_years]
-                    break
+    try:
+        # Hardcode: years always at index 2 (third row)
+        year_row = df.iloc[2, 2:]
+        years = [str(int(y)) if not pd.isna(y) else "" for y in year_row]
+    except Exception as e:
+        years = [f"Year {i+1}" for i in range(df.shape[1] - 2)]
 
-    if not years and len(df.columns) > 2:
-        years = [f"Year {i}" for i in range(1, len(df.columns) - 1)]
-
+    # Find matching metric
     match_row = df[df[1].str.lower().str.strip() == metric_name.lower().strip()]
-    if not match_row.empty and len(df.columns) > 2:
+    if not match_row.empty:
         values = match_row.iloc[0, 2:].tolist()
         min_length = min(len(years), len(values))
-        return pd.DataFrame({
-            "Year": years[:min_length], 
-            "Value": values[:min_length]
-        })
+        return pd.DataFrame({"Year": years[:min_length], "Value": values[:min_length]})
     else:
         return pd.DataFrame({"Year": years, "Value": [None] * len(years)})
 
