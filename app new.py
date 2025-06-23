@@ -221,7 +221,7 @@ def extract_metric(df, metric_name):
     # Convert metric labels to string
     df[1] = df[1].astype(str)
 
-    # ✅ For embedded data, years are in df.iloc[2, 1:]
+    # ✅ For embedded data, years are in df.iloc[3, 2:]
     year_row = df.iloc[3, 2:]
     years = [str(int(y)) for y in year_row if pd.notna(y)]
 
