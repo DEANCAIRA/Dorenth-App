@@ -134,38 +134,6 @@ def get_embedded_data():
         "PT_Pertamina_PGAS": df_pertamina
     }
 
-# --- Enhanced Value Formatting Function ---
-def format_value(value, metric_name):
-    """Format values based on metric type for better display"""
-    if pd.isna(value):
-        return "N/A"
-    
-    metric_lower = metric_name.lower()
-    
-    # Percentage metrics
-    if "%" in metric_name or any(word in metric_lower for word in ['roa', 'roe', 'nim', 'margin']):
-        return f"{value:.2f}%"
-    
-    # Financial metrics in Trillions IDR
-    elif any(word in metric_lower for word in ['ebitda', 'revenue', 'net income', 'total assets', 'total debt']):
-        return f"{value:.2f} Trillion IDR"
-    
-    # Default formatting
-    else:
-        return f"{value:.2f}"
-
-# --- Get Medal Emoji Function ---
-def get_medal_emoji(rank):
-    """Return appropriate medal emoji for ranking"""
-    if rank == 1:
-        return "🥇 1st"
-    elif rank == 2:
-        return "🥈 2nd"
-    elif rank == 3:
-        return "🥉 3rd"
-    else:
-        return f"#{rank}"
-
 # --- Title & Description ---
 st.title("🇮🇩 Indonesian Companies Financial Comparison Tool")
 st.write("""
@@ -392,9 +360,9 @@ if company_data:
                                     st.write(f"**{company}:**")
                                     col1, col2, col3, col4 = st.columns(4)
                                     with col1:
-                                        st.metric("Average", format_value(values.mean(), selected_metric))
+                                        st.metric("Average", f"{values.mean():.2f}")
                                     with col2:
-                                        st.metric("Latest (2024)", format_value(values.iloc[-1], selected_metric))
+                                        st.metric("Latest (2024)", f"{values.iloc[-1]:.2f}")
                                     with col3:
                                         if len(values) > 1:
                                             growth = ((values.iloc[-1] - values.iloc[0]) / values.iloc[0] * 100)
@@ -402,7 +370,7 @@ if company_data:
                                         else:
                                             st.metric("5-Year Growth", "N/A")
                                     with col4:
-                                        st.metric("Highest", format_value(values.max(), selected_metric))
+                                        st.metric("Highest", f"{values.max():.2f}")
                                     st.divider()
 
                     with tab4:
@@ -417,19 +385,16 @@ if company_data:
                             for idx, row in latest_data.iterrows():
                                 if idx < 3:  # Top 3 get special medals
                                     medals = ["🥇", "🥈", "🥉"]
-                                    st.write(f"{medals[idx]} **{row['Company']}**: {format_value(row['Value'], selected_metric)}")
+                                    st.write(f"{medals[idx]} **{row['Company']}**: {row['Value']:.2f}")
                                 else:
-                                    st.write(f"{row['Rank']}. **{row['Company']}**: {format_value(row['Value'], selected_metric)}")
+                                    st.write(f"{row['Rank']}. **{row['Company']}**: {row['Value']:.2f}")
                         else:
                             st.info("No 2024 data available for ranking.")
 
                     with tab5:
-                        # ENHANCED QUICK RECALL SECTION
-                        st.subheader(f"🔍 Enhanced Quick Recall: {selected_metric.upper()}")
-                        st.markdown("""
-                        **Instantly view and compare the selected metric across all Indonesian companies for any specific year.**
-                        *Perfect for quick analysis and decision-making.*
-                        """)
+                        # Quick Recall - Show all companies for selected metric
+                        st.subheader(f"🔍 Quick Recall: {selected_metric.upper()} for All Companies")
+                        st.write("Instantly view the selected metric for all 10 Indonesian companies in a specific year.")
                         
                         # Create a comprehensive view
                         recall_data = pd.DataFrame()
@@ -445,12 +410,9 @@ if company_data:
                             recall_data["Value"] = pd.to_numeric(recall_data["Value"], errors="coerce")
                             recall_data = recall_data.dropna(subset=["Value"])
                             
-                            # 1. CLEAR YEAR SELECTION
-                            st.markdown("### 📅 **Step 1: Select Year for Analysis**")
-                            
-                            # Available years display
+                            # Available years
                             available_years = sorted(recall_data["Year"].unique(), reverse=True)
-                            st.info(f"📊 **Available Data Years:** {', '.join(available_years)} | **Coverage:** Full 5-year historical data (2020-2024)")
+                            st.write(f"**Available years:** {', '.join(available_years)}")
                             
                             # Year selector for quick recall with explicit options
                             recall_year = st.selectbox(
@@ -584,4 +546,4 @@ if company_data and data_source == "Use Indonesian Companies Data":
 
 # --- Footer ---
 st.markdown("---")
-st.markdown("🇮🇩 **Indonesian Companies Financial Analysis** | Data includes top IDX listed companies")
+st.markdown("🇮🇩 **Indonesian Companies Financial Analysis** | Data includes top IDX listed companies | Built with Streamlit & Plotly")
