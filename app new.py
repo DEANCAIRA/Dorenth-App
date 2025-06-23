@@ -221,8 +221,9 @@ def extract_metric(df, metric_name):
     # Convert metric labels to string
     df[1] = df[1].astype(str)
 
-    # ✅ For embedded data, years are in df.iloc[3, 2:]
-    years = [str(int(df.iloc[i, 1])) for i in range(2, len(df)) if pd.notna(df.iloc[i, 1])]
+    # ✅ For embedded data, years are in df.iloc[2, 1:]
+    year_row = df.iloc[2, 2:]
+    years = [str(int(y)) for y in year_row if pd.notna(y)]
 
     # ✅ Find matching row (e.g. "EBITDA")
     match = df[df[1].str.lower().str.strip() == metric_name.lower().strip()]
