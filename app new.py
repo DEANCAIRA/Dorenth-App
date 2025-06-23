@@ -207,18 +207,19 @@ def get_available_metrics(dataframes):
 def extract_metric(df, metric_name):
     if df.empty or len(df.columns) < 3:
         return pd.DataFrame({"Year": [], "Value": []})
-
+    
     # Convert metric labels to string
     df[1] = df[1].astype(str)
-
-    # ✅ For embedded data, years are in df.iloc[2, 6:]
-    year_row = df.iloc[2, 2:]
-    years = [str(int(y)) for y in year_row if pd.notna(y)]
-
+    
+    # ✅ Fix: Years are in the first row (index 0), starting from column 1
+    year_row = df.iloc[0, 1:]  # Changed from df.iloc[2, 6:] to df.iloc[0, 1:]
+    years = [str(int(y)) for y in year_row if pd.notna(y) and str(y).isdigit()]
+    
     # ✅ Find matching row (e.g. "EBITDA")
     match = df[df[1].str.lower().str.strip() == metric_name.lower().strip()]
+    
     if not match.empty:
-        values = match.iloc[0, 2:].tolist()
+        values = match.iloc[0, 2:].tolist()  # Values start from column 2
         min_len = min(len(years), len(values))
         return pd.DataFrame({
             "Year": years[:min_len],
