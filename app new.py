@@ -215,35 +215,30 @@ def get_available_metrics(dataframes):
     return sorted(metrics)
 
 def extract_metric(df, metric_name):
-    if df.empty or len(df.columns) < 2:
+    if df.empty or len(df.columns) < 3:
         return pd.DataFrame({"Year": [], "Value": []})
-    
+
+    # Convert metric labels to string
     df[1] = df[1].astype(str)
 
-    # Auto-detect year row
-    years = []
-    for i in range(min(10, len(df))):
-        if i < len(df):
-            row_values = df.iloc[i, 2:].tolist() if len(df.columns) > 2 else []
-            if row_values:
-                numeric_years = pd.Series(pd.to_numeric(row_values, errors="coerce"))
-                if numeric_years.notna().sum() >= 2:
-                    years = [str(int(y)) if not pd.isna(y) else "" for y in numeric_years]
-                    break
+    # ✅ For embedded data, years are in df.iloc[2, 1:]
+    year_row = df.iloc[2, 2:]
+    years = [str(int(y)) for y in year_row if pd.notna(y)]
 
-    if not years and len(df.columns) > 2:
-        years = [f"Year {i}" for i in range(1, len(df.columns) - 1)]
-
-    match_row = df[df[1].str.lower().str.strip() == metric_name.lower().strip()]
-    if not match_row.empty and len(df.columns) > 2:
-        values = match_row.iloc[0, 2:].tolist()
-        min_length = min(len(years), len(values))
+    # ✅ Find matching row (e.g. "EBITDA")
+    match = df[df[1].str.lower().str.strip() == metric_name.lower().strip()]
+    if not match.empty:
+        values = match.iloc[0, 2:].tolist()
+        min_len = min(len(years), len(values))
         return pd.DataFrame({
-            "Year": years[:min_length], 
-            "Value": values[:min_length]
+            "Year": years[:min_len],
+            "Value": values[:min_len]
         })
     else:
-        return pd.DataFrame({"Year": years, "Value": [None] * len(years)})
+        return pd.DataFrame({
+            "Year": years,
+            "Value": [None] * len(years)
+        })
 
 # --- Continue only if we have data ---
 if company_data:
