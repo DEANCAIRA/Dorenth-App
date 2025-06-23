@@ -218,22 +218,21 @@ def extract_metric(df, metric_name):
     if df.empty or len(df.columns) < 3:
         return pd.DataFrame({"Year": [], "Value": []})
 
+    # Convert metric labels to string
     df[1] = df[1].astype(str)
 
-    # ✅ Correct: extract years from the 3rd row, starting at column 2
+    # ✅ For embedded data, years are in df.iloc[2, 1:]
     year_row = df.iloc[2, 2:]
-    try:
-        years = [str(int(float(y))) if pd.notna(y) else "" for y in year_row]
-    except:
-        years = [f"Year {i+1}" for i in range(len(year_row))]
+    years = [str(int(y)) for y in year_row if pd.notna(y)]
 
-    # ✅ Find the row that matches the selected metric name
-    match_row = df[df[1].str.lower().str.strip() == metric_name.lower().strip()]
-    if not match_row.empty:
-        values = match_row.iloc[0, 2:].tolist()
+    # ✅ Find matching row (e.g. "EBITDA")
+    match = df[df[1].str.lower().str.strip() == metric_name.lower().strip()]
+    if not match.empty:
+        values = match.iloc[0, 2:].tolist()
+        min_len = min(len(years), len(values))
         return pd.DataFrame({
-            "Year": years[:len(values)],
-            "Value": values[:len(years)]
+            "Year": years[:min_len],
+            "Value": values[:min_len]
         })
     else:
         return pd.DataFrame({
