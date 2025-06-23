@@ -30,11 +30,14 @@ def get_embedded_data():
     data = {}
     for name, base_values in companies.items():
         rows = [
-            [0, "Year"] + metrics,
-            [0, ""] + metrics
+            [0, "Year"] + [str(y) for y in years],
+            [0, ""] + [str(y) for y in years]
         ]
-        for i, year in enumerate(years):
-            rows.append([0, year] + [round(val * (1 + 0.05 * i), 2) for val in base_values])
+        for i, metric in enumerate(metrics):
+            row = [0, metric]
+            for j in range(len(years)):
+                row.append(round(base_values[i] * (1 + 0.05 * j), 2))
+            rows.append(row)
         df = pd.DataFrame(rows)
         data[name] = df
 
@@ -44,19 +47,15 @@ def get_embedded_data():
 def extract_metric(df, metric_name):
     df[1] = df[1].astype(str)
 
-    # Try to get numeric years from column 1 starting from row 2
-    possible_years = df.iloc[2:, 1].tolist()
-    years = [str(int(y)) for y in possible_years if str(y).isdigit()]
+    # Extract years from the second row
+    year_row = df.iloc[0, 2:].tolist()
+    years = [str(int(y)) if str(y).isdigit() else y for y in year_row]
 
-    # Now find the row where the metric name matches
     match_row = df[df[1].str.lower().str.strip() == metric_name.lower().strip()]
     if not match_row.empty:
         values = match_row.iloc[0, 2:].tolist()
         min_len = min(len(values), len(years))
-        return pd.DataFrame({
-            "Year": years[:min_len],
-            "Value": values[:min_len]
-        })
+        return pd.DataFrame({"Year": years[:min_len], "Value": values[:min_len]})
     else:
         return pd.DataFrame({"Year": years, "Value": [None] * len(years)})
 
@@ -88,7 +87,7 @@ if company_data:
         metrics = set()
         for df in dfs.values():
             if len(df.columns) > 1:
-                labels = df.iloc[1, 2:].astype(str).str.lower().str.strip().tolist()
+                labels = df.iloc[2:, 1].astype(str).str.lower().str.strip().tolist()
                 metrics.update([m for m in labels if m not in ["year", "", "nan"]])
         return sorted(metrics)
 
