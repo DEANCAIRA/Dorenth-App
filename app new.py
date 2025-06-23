@@ -222,7 +222,7 @@ def extract_metric(df, metric_name):
     df[1] = df[1].astype(str)
 
     # ✅ For embedded data, years are in df.iloc[2, 1:]
-    year_row = df.iloc[2, 3:]
+    year_row = df.iloc[3, 2:]
     years = [str(int(y)) for y in year_row if pd.notna(y)]
 
     # ✅ Find matching row (e.g. "EBITDA")
