@@ -452,7 +452,136 @@ if company_data:
                             available_years = sorted(recall_data["Year"].unique(), reverse=True)
                             st.info(f"📊 **Available Data Years:** {', '.join(available_years)} | **Coverage:** Full 5-year historical data (2020-2024)")
                             
-                            # Explicit dropdown with help text
+                            # Year selector for quick recall with explicit options
                             recall_year = st.selectbox(
-                                "Choose the specific year you want to analyze:",
-                                options=["2024
+                                "📅 Choose a specific year to recall data:",
+                                options=["2024", "2023", "2022", "2021", "2020"],
+                                index=0,
+                                key="recall_year_selector",
+                                help="Select the year you want to see data for all companies"
+                            )
+                            
+                            year_data = recall_data[recall_data["Year"] == recall_year].copy()
+                            
+                            if not year_data.empty:
+                                # Sort by value (highest first)
+                                year_data = year_data.sort_values("Value", ascending=False).reset_index(drop=True)
+                                
+                                st.markdown(f"### 📊 {selected_metric.upper()} Rankings for Year {recall_year}")
+                                st.write(f"*All 10 Indonesian companies ranked by {selected_metric.upper()} in {recall_year}*")
+                                
+                                # Create a nice table format
+                                display_data = []
+                                for idx, row in year_data.iterrows():
+                                    rank = idx + 1
+                                    company = row['Company']
+                                    value = row['Value']
+                                    
+                                    # Format the value based on metric type
+                                    if "%" in selected_metric:
+                                        formatted_value = f"{value:.2f}%"
+                                    elif selected_metric.lower() in ['ebitda', 'revenue', 'net income', 'total assets', 'total debt']:
+                                        formatted_value = f"{value:.2f} Trillion IDR"
+                                    else:
+                                        formatted_value = f"{value:.2f}"
+                                    
+                                    # Add medal emojis for top 3
+                                    if rank == 1:
+                                        rank_display = "🥇 1st"
+                                    elif rank == 2:
+                                        rank_display = "🥈 2nd"
+                                    elif rank == 3:
+                                        rank_display = "🥉 3rd"
+                                    else:
+                                        rank_display = f"#{rank}"
+                                    
+                                    display_data.append({
+                                        "Rank": rank_display,
+                                        "Company": company,
+                                        f"{selected_metric.upper()}": formatted_value
+                                    })
+                                
+                                # Display as dataframe
+                                df_display = pd.DataFrame(display_data)
+                                st.dataframe(df_display, use_container_width=True, hide_index=True)
+                                
+                                # Add summary statistics
+                                st.markdown("---")
+                                st.markdown("### 📈 Summary Statistics")
+                                col1, col2, col3, col4 = st.columns(4)
+                                with col1:
+                                    st.metric("🏆 Highest", f"{year_data['Value'].max():.2f}")
+                                with col2:
+                                    st.metric("📊 Average", f"{year_data['Value'].mean():.2f}")
+                                with col3:
+                                    st.metric("📉 Lowest", f"{year_data['Value'].min():.2f}")
+                                with col4:
+                                    range_val = year_data['Value'].max() - year_data['Value'].min()
+                                    st.metric("📏 Range", f"{range_val:.2f}")
+                                
+                                # Show all years data in expandable section
+                                with st.expander(f"📋 Historical Data: {selected_metric.upper()} (2020-2024)"):
+                                    st.write("Complete historical data for all companies:")
+                                    pivot_recall = recall_data.pivot_table(
+                                        index="Company", 
+                                        columns="Year", 
+                                        values="Value", 
+                                        aggfunc="first"
+                                    )
+                                    # Sort by latest year (2024)
+                                    if "2024" in pivot_recall.columns:
+                                        pivot_recall = pivot_recall.sort_values("2024", ascending=False)
+                                    st.dataframe(pivot_recall, use_container_width=True)
+                                    
+                                    # Download button for historical data
+                                    csv_historical = pivot_recall.to_csv()
+                                    st.download_button(
+                                        label="📥 Download Historical Data as CSV",
+                                        data=csv_historical,
+                                        file_name=f"Indonesian_Companies_{selected_metric}_Historical_Data.csv",
+                                        mime="text/csv"
+                                    )
+                            else:
+                                st.warning(f"⚠️ No data available for year {recall_year}. Please select a different year.")
+                        else:
+                            st.error("❌ No data available for quick recall. Please check the data source.")
+                else:
+                    st.warning("⚠️ No valid numerical data found for the selected metric and filters.")
+            else:
+                st.warning("⚠️ No matching data found for the selected metric across companies.")
+    else:
+        st.error("❌ No metrics found in the data. Please check your data format.")
+
+# --- Sector Analysis ---
+if company_data and data_source == "Use Indonesian Companies Data":
+    st.header("4. Sector Analysis")
+    
+    # Define sectors
+    sectors = {
+        "Banking": ["Bank Rakyat Indonesia BBRI", "Bank Central Asia BBCA", "Bank Mandiri BMRI"],
+        "Industrial": ["Astra International ASII", "Semen Indonesia SMGR"],
+        "Consumer Goods": ["Indofood Sukses Makmur INDF", "Unilever Indonesia UNVR", "Gudang Garam GGRM"],
+        "Infrastructure": ["Telkom Indonesia TLKM", "Pertamina PGAS"]
+    }
+    
+    sector_analysis = st.selectbox("Select sector for analysis:", list(sectors.keys()))
+    
+    if sector_analysis and all_metrics:
+        sector_companies = sectors[sector_analysis]
+        sector_data = plot_df[plot_df["Company"].isin(sector_companies)] if 'plot_df' in locals() else pd.DataFrame()
+        
+        if not sector_data.empty:
+            fig_sector = px.bar(
+                sector_data[sector_data["Year"] == "2024"],
+                x="Company", y="Value",
+                title=f"{sector_analysis} Sector - {selected_metric.upper()} (2024)",
+                color="Company"
+            )
+            fig_sector.update_layout(showlegend=False)
+            st.plotly_chart(fig_sector, use_container_width=True)
+        else:
+            st.info(f"No data available for {sector_analysis} sector with current filters.")
+
+# --- Footer ---
+st.markdown("---")
+st.markdown("🇮🇩 **Indonesian Companies Financial Analysis** | Data includes top IDX listed companies")
