@@ -220,21 +220,26 @@ def extract_metric(df, metric_name):
 
     df[1] = df[1].astype(str)
 
+    # ✅ Correct: extract years from the 3rd row, starting at column 2
+    year_row = df.iloc[2, 2:]
     try:
-        # Hardcode: years always at index 2 (third row)
-        year_row = df.iloc[2, 2:]
-        years = [str(int(y)) if not pd.isna(y) else "" for y in year_row]
-    except Exception as e:
-        years = [f"Year {i+1}" for i in range(df.shape[1] - 2)]
+        years = [str(int(float(y))) if pd.notna(y) else "" for y in year_row]
+    except:
+        years = [f"Year {i+1}" for i in range(len(year_row))]
 
-    # Find matching metric
+    # ✅ Find the row that matches the selected metric name
     match_row = df[df[1].str.lower().str.strip() == metric_name.lower().strip()]
     if not match_row.empty:
         values = match_row.iloc[0, 2:].tolist()
-        min_length = min(len(years), len(values))
-        return pd.DataFrame({"Year": years[:min_length], "Value": values[:min_length]})
+        return pd.DataFrame({
+            "Year": years[:len(values)],
+            "Value": values[:len(years)]
+        })
     else:
-        return pd.DataFrame({"Year": years, "Value": [None] * len(years)})
+        return pd.DataFrame({
+            "Year": years,
+            "Value": [None] * len(years)
+        })
 
 # --- Continue only if we have data ---
 if company_data:
