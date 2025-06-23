@@ -202,7 +202,7 @@ def get_available_metrics(dataframes):
     for df in dataframes.values():
         if len(df.columns) > 1:
             # Get metrics from row 1 (header row) excluding 'Year' and empty values
-            labels = df.iloc[1, 1:].astype(str).str.lower().str.strip().tolist()
+            labels = df.iloc[1, 2:].astype(str).str.lower().str.strip().tolist()
             metrics.update([m for m in labels if m and m not in ['year', '', 'nan']])
     return sorted(metrics)
 
@@ -218,7 +218,7 @@ def extract_metric(df, metric_name):
         
         # Find the metric row by checking row 1 (header row)
         metric_col_idx = None
-        header_row = df.iloc[1].astype(str).str.lower().str.strip()
+        header_row = df.iloc[2].astype(str).str.lower().str.strip()
         
         for col_idx, header in enumerate(header_row):
             if header == metric_name.lower().strip():
