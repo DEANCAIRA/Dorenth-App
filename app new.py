@@ -218,27 +218,25 @@ def extract_metric(df, metric_name):
     if df.empty or len(df.columns) < 3:
         return pd.DataFrame({"Year": [], "Value": []})
 
-    # Convert metric labels to string
-    df[1] = df[1].astype(str)
+    df[1] = df[1].astype(str)  # ensure metric column is string for matching
 
-    # ✅ For embedded data, years are in df.iloc[2, 1:]
-    year_row = df.iloc[2, 2:]
-    years = [str(int(y)) for y in year_row if pd.notna(y)]
+    # ✅ Correct year extraction from column 1 (row 2 and downward)
+    years = [str(int(df.iloc[i, 1])) for i in range(2, len(df)) if pd.notna(df.iloc[i, 1])]
 
-    # ✅ Find matching row (e.g. "EBITDA")
-    match = df[df[1].str.lower().str.strip() == metric_name.lower().strip()]
-    if not match.empty:
-        values = match.iloc[0, 2:].tolist()
-        min_len = min(len(years), len(values))
-        return pd.DataFrame({
-            "Year": years[:min_len],
-            "Value": values[:min_len]
-        })
-    else:
-        return pd.DataFrame({
-            "Year": years,
-            "Value": [None] * len(years)
-        })
+    # ✅ Find the metric's column index (row 0)
+    metric_col = None
+    for col in range(2, df.shape[1]):
+        if str(df.iloc[0, col]).lower().strip() == metric_name.lower().strip():
+            metric_col = col
+            break
+
+    if metric_col is None:
+        return pd.DataFrame({"Year": years, "Value": [None] * len(years)})
+
+    # ✅ Extract values vertically for that metric
+    values = [df.iloc[i, metric_col] for i in range(2, len(df))]
+
+    return pd.DataFrame({"Year": years[:len(values)], "Value": values[:len(years)]})
 
 # --- Continue only if we have data ---
 if company_data:
