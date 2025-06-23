@@ -14,7 +14,7 @@ def get_embedded_data():
     # PT Bank Rakyat Indonesia Tbk (BBRI) - Largest bank in Indonesia
     df_bri = pd.DataFrame({
         0: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "NIM %"],
-        1: [0, "", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "NIM %"],
+        1: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "NIM %"],
         2: [0, 2020, 45.2, 98.5, 25.1, 1456.0, 1205.8, 1.72, 11.2, 6.8],
         3: [0, 2021, 52.8, 112.3, 31.4, 1635.7, 1351.2, 1.92, 12.5, 7.1],
         4: [0, 2022, 58.3, 125.7, 35.2, 1785.4, 1468.9, 1.97, 13.1, 7.3],
@@ -25,7 +25,7 @@ def get_embedded_data():
     # PT Bank Central Asia Tbk (BBCA) - Private bank
     df_bca = pd.DataFrame({
         0: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "NIM %"],
-        1: [0, "", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "NIM %"],
+        1: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "NIM %"],
         2: [0, 2020, 38.7, 75.2, 28.1, 1021.8, 825.4, 2.75, 15.8, 6.2],
         3: [0, 2021, 42.3, 82.6, 31.3, 1152.3, 931.7, 2.72, 16.1, 6.4],
         4: [0, 2022, 45.9, 89.7, 34.2, 1268.5, 1024.8, 2.70, 16.5, 6.5],
@@ -36,7 +36,7 @@ def get_embedded_data():
     # PT Bank Mandiri Tbk (BMRI) - State-owned bank
     df_mandiri = pd.DataFrame({
         0: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "NIM %"],
-        1: [0, "", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "NIM %"],
+        1: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "NIM %"],
         2: [0, 2020, 41.5, 89.3, 22.2, 1598.2, 1321.8, 1.39, 9.8, 5.9],
         3: [0, 2021, 46.2, 96.8, 26.1, 1742.5, 1438.7, 1.50, 10.5, 6.1],
         4: [0, 2022, 51.3, 105.7, 29.8, 1891.3, 1563.2, 1.58, 11.2, 6.3],
@@ -222,7 +222,7 @@ def extract_metric(df, metric_name):
     df[1] = df[1].astype(str)
 
     # ✅ For embedded data, years are in df.iloc[2, 1:]
-    year_row = df.iloc[2, 2:]
+    year_row = df.iloc[1, 6:]
     years = [str(int(y)) for y in year_row if pd.notna(y)]
 
     # ✅ Find matching row (e.g. "EBITDA")
