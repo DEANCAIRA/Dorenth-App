@@ -47,7 +47,7 @@ def get_embedded_data():
     # PT Astra International Tbk (ASII) - Automotive conglomerate
     df_astra = pd.DataFrame({
         0: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
-        1: [0, "", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
+        1: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
         2: [0, 2020, 28.5, 185.9, 12.8, 295.4, 98.2, 4.3, 8.2, 12.5],
         3: [0, 2021, 32.1, 206.7, 16.2, 321.8, 105.7, 5.0, 9.8, 13.2],
         4: [0, 2022, 35.8, 228.4, 18.9, 348.9, 112.5, 5.4, 11.1, 13.8],
@@ -58,7 +58,7 @@ def get_embedded_data():
     # PT Telkom Indonesia Tbk (TLKM) - Telecommunications
     df_telkom = pd.DataFrame({
         0: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
-        1: [0, "", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
+        1: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
         2: [0, 2020, 22.8, 64.1, 15.3, 189.2, 42.7, 8.1, 12.5, 32.1],
         3: [0, 2021, 24.5, 67.8, 16.8, 201.5, 45.3, 8.3, 13.2, 33.2],
         4: [0, 2022, 26.3, 71.9, 18.2, 214.8, 48.1, 8.5, 13.8, 34.1],
@@ -69,7 +69,7 @@ def get_embedded_data():
     # PT Indofood Sukses Makmur Tbk (INDF) - Food & Beverage
     df_indofood = pd.DataFrame({
         0: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
-        1: [0, "", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
+        1: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
         2: [0, 2020, 18.7, 76.6, 4.2, 89.3, 35.8, 4.7, 8.9, 18.5],
         3: [0, 2021, 20.3, 82.1, 5.1, 94.7, 37.2, 5.4, 10.2, 19.2],
         4: [0, 2022, 21.8, 87.9, 5.8, 100.2, 38.9, 5.8, 11.1, 19.8],
@@ -80,7 +80,7 @@ def get_embedded_data():
     # PT Unilever Indonesia Tbk (UNVR) - Consumer Goods
     df_unilever = pd.DataFrame({
         0: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
-        1: [0, "", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
+        1: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
         2: [0, 2020, 8.9, 41.2, 7.2, 18.5, 2.1, 38.9, 85.2, 19.8],
         3: [0, 2021, 9.5, 43.8, 7.8, 19.8, 2.3, 39.4, 88.1, 20.5],
         4: [0, 2022, 10.1, 46.7, 8.3, 21.2, 2.5, 39.2, 89.7, 21.1],
@@ -91,7 +91,7 @@ def get_embedded_data():
     # PT Gudang Garam Tbk (GGRM) - Tobacco
     df_gudang_garam = pd.DataFrame({
         0: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
-        1: [0, "", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
+        1: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
         2: [0, 2020, 12.8, 68.7, 6.9, 67.8, 15.2, 10.2, 18.5, 16.2],
         3: [0, 2021, 14.2, 73.9, 8.1, 72.1, 16.8, 11.2, 20.8, 17.1],
         4: [0, 2022, 15.6, 79.4, 9.2, 76.8, 18.3, 12.0, 22.7, 17.8],
@@ -102,7 +102,7 @@ def get_embedded_data():
     # PT Semen Indonesia Tbk (SMGR) - Cement
     df_semen = pd.DataFrame({
         0: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
-        1: [0, "", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
+        1: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
         2: [0, 2020, 8.2, 28.9, 1.8, 48.7, 18.9, 3.7, 6.2, 22.5],
         3: [0, 2021, 9.1, 31.5, 2.3, 51.2, 19.8, 4.5, 7.8, 23.8],
         4: [0, 2022, 9.8, 34.2, 2.9, 54.1, 20.7, 5.4, 9.5, 24.7],
@@ -113,7 +113,7 @@ def get_embedded_data():
     # PT Pertamina Tbk (PGAS) - Oil & Gas
     df_pertamina = pd.DataFrame({
         0: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
-        1: [0, "", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
+        1: [0, "Year", "EBITDA", "Revenue", "Net Income", "Total Assets", "Total Debt", "ROA %", "ROE %", "Operating Margin %"],
         2: [0, 2020, 15.6, 42.3, 2.1, 78.9, 28.7, 2.7, 4.8, 28.9],
         3: [0, 2021, 18.9, 51.7, 3.8, 85.2, 31.2, 4.5, 8.2, 32.1],
         4: [0, 2022, 22.3, 63.8, 5.7, 92.4, 33.9, 6.2, 11.5, 34.8],
