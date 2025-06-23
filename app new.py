@@ -43,22 +43,22 @@ def get_embedded_data():
 # --- Metric Extraction ---
 def extract_metric(df, metric_name):
     df[1] = df[1].astype(str)
-    years = []
-    for i in range(min(10, len(df))):
-        row_values = df.iloc[i, 2:].tolist()
-        numeric_years = pd.Series(pd.to_numeric(row_values, errors="coerce"))
-        if numeric_years.notna().sum() >= 2:
-            years = [str(int(y)) if not pd.isna(y) else "" for y in numeric_years]
-            break
-    if not years:
-        years = [f"Year {i}" for i in range(1, len(df.columns) - 1)]
 
+    # Try to get numeric years from column 1 starting from row 2
+    possible_years = df.iloc[2:, 1].tolist()
+    years = [str(int(y)) for y in possible_years if str(y).isdigit()]
+
+    # Now find the row where the metric name matches
     match_row = df[df[1].str.lower().str.strip() == metric_name.lower().strip()]
     if not match_row.empty:
         values = match_row.iloc[0, 2:].tolist()
-        return pd.DataFrame({"Year": years[:len(values)], "Value": values[:len(years)]})
+        min_len = min(len(values), len(years))
+        return pd.DataFrame({
+            "Year": years[:min_len],
+            "Value": values[:min_len]
+        })
     else:
-        return pd.DataFrame({"Year": years, "Value": [None]*len(years)})
+        return pd.DataFrame({"Year": years, "Value": [None] * len(years)})
 
 # --- App Interface ---
 st.title("🇮🇩 Indonesian Companies Financial Comparison Tool")
