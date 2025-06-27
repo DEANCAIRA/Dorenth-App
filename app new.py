@@ -365,18 +365,6 @@ if selected_companies:
         # Display M&A Summary Table
         st.subheader("M&A Valuation Summary (2024)")
         st.dataframe(ma_summary_df, use_container_width=True)
-
-     if not ma_summary_df.empty:
-        # Industry analysis
-        industry_stats = ma_summary_df.groupby('Industry').agg({
-            'EV_EBITDA_Multiple': ['mean', 'std'],
-            'Debt_EBITDA_Ratio': ['mean', 'std'],
-            'ROE_Percent': ['mean', 'std'],
-            'EBITDA_2024': 'sum'
-        }).round(2)
-        
-        st.subheader("Industry Analysis Summary")
-        st.dataframe(industry_stats, use_container_width=True)
         
     # M&A Metric Analysis
     st.header("3. Detailed M&A Metric Analysis")
@@ -564,7 +552,23 @@ if selected_companies:
                 file_name="ma_valuation_summary.csv",
                 mime="text/csv"
             )
+
+    # M&A Insights
+    st.header("7. M&A Insights & Recommendations")
     
+    if not ma_summary_df.empty:
+        # Industry analysis
+        industry_stats = ma_summary_df.groupby('Industry').agg({
+            'EV_EBITDA_Multiple': ['mean', 'std'],
+            'Debt_EBITDA_Ratio': ['mean', 'std'],
+            'ROE_Percent': ['mean', 'std'],
+            'EBITDA_2024': 'sum'
+        }).round(2)
+        
+        st.subheader("Industry Analysis Summary")
+        st.dataframe(industry_stats, use_container_width=True)
+        
+        
 # Footer
 st.markdown("---")
 st.markdown("**M&A Decision Support Tool** | Indonesian Market Analysis")
