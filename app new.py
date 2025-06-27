@@ -568,41 +568,7 @@ if selected_companies:
         st.subheader("Industry Analysis Summary")
         st.dataframe(industry_stats, use_container_width=True)
         
-        # Generate insights
-        st.subheader("Key Insights")
         
-        # Find best and worst performers
-        best_roe = ma_summary_df.loc[ma_summary_df['ROE_Percent'].idxmax()]
-        lowest_leverage = ma_summary_df.loc[ma_summary_df['Debt_EBITDA_Ratio'].idxmin()]
-        most_valuable = ma_summary_df.loc[ma_summary_df['Enterprise_Value_2024'].idxmax()]
-        
-        insights = [
-            f"🏆 **Highest ROE**: {best_roe['Company']} ({best_roe['Industry']}) with {best_roe['ROE_Percent']:.1f}% ROE",
-            f"💪 **Lowest Leverage**: {lowest_leverage['Company']} ({lowest_leverage['Industry']}) with {lowest_leverage['Debt_EBITDA_Ratio']:.1f}x Debt/EBITDA",
-            f"🏢 **Largest Company**: {most_valuable['Company']} ({most_valuable['Industry']}) with {most_valuable['Enterprise_Value_2024']:.1f}T IDR Enterprise Value",
-            f"📊 **Average Industry Multiples**: Food ({industry_stats.loc['Food', ('EV_EBITDA_Multiple', 'mean')]:.1f}x), Chemical ({industry_stats.loc['Chemical', ('EV_EBITDA_Multiple', 'mean')]:.1f}x), Mobility ({industry_stats.loc['Mobility', ('EV_EBITDA_Multiple', 'mean')]:.1f}x)"
-        ]
-        
-        for insight in insights:
-            st.markdown(insight)
-        
-        # Strategic recommendations
-        st.subheader("Strategic M&A Recommendations")
-        
-        recommendations = [
-            "🔍 **Due Diligence Focus**: Companies with Debt/EBITDA > 3x require intensive financial review",
-            "💰 **Valuation Strategy**: Use industry-specific multiples for more accurate pricing",
-            "🎯 **Target Selection**: Prioritize companies with ROE > 15% and moderate leverage",
-            "📈 **Growth Potential**: Consider revenue growth trends alongside current profitability",
-            "⚖️ **Risk Management**: Balance portfolio across industries to diversify sector-specific risks"
-        ]
-        
-        for rec in recommendations:
-            st.markdown(rec)
-
-else:
-    st.warning("Please select at least one company to begin the M&A analysis.")
-
 # Footer
 st.markdown("---")
 st.markdown("**M&A Decision Support Tool** | Indonesian Market Analysis")
