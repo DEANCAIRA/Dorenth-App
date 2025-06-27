@@ -367,8 +367,8 @@ if selected_companies:
         st.dataframe(ma_summary_df, use_container_width=True)
         
         # Key M&A Metrics Visualization
-        col1, col2, col3 = st.columns(3)
         st.subheader("Data Table")
+        col1, col2, col3 = st.columns(3)
         with col1:
             st.metric(
                 "Average EV/EBITDA Multiple",
