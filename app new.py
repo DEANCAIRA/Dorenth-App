@@ -530,7 +530,7 @@ if selected_companies:
 
 
     # M&A Insights
-    st.header("7. M&A Insights & Recommendations")
+    st.header("7. M&A Insights")
     
     if not ma_summary_df.empty:
         # Industry analysis
