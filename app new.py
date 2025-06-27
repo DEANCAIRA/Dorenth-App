@@ -528,30 +528,6 @@ if selected_companies:
                 st.subheader(f"Comparable Companies in {target_industry} Industry")
                 st.dataframe(industry_summary, use_container_width=True)
 
-     # Export functionality
-    st.header("6. Export Analysis")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        if not plot_df.empty:
-            csv_data = plot_df.to_csv(index=False)
-            st.download_button(
-                label="📥 Download Trend Data (CSV)",
-                data=csv_data,
-                file_name=f"ma_analysis_{selected_metric.lower()}.csv",
-                mime="text/csv"
-            )
-    
-    with col2:
-        if not ma_summary_df.empty:
-            summary_csv = ma_summary_df.to_csv(index=False)
-            st.download_button(
-                label="📥 Download M&A Summary (CSV)",
-                data=summary_csv,
-                file_name="ma_valuation_summary.csv",
-                mime="text/csv"
-            )
 
     # M&A Insights
     st.header("7. M&A Insights & Recommendations")
