@@ -671,4 +671,4 @@ else:
 
 # Footer
 st.markdown("---")
-st.markdown("**M&A Decision Support Tool** | Indonesian Market Analysis | Financial data for educational purposes")
+st.markdown("**M&A Decision Support Tool** | Indonesian Market Analysis")
