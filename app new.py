@@ -366,30 +366,6 @@ if selected_companies:
         st.subheader("M&A Valuation Summary (2024)")
         st.dataframe(ma_summary_df, use_container_width=True)
         
-        # Key M&A Metrics Visualization
-        st.subheader("Data Table")
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric(
-                "Average EV/EBITDA Multiple",
-                f"{ma_summary_df['EV_EBITDA_Multiple'].mean():.1f}x",
-                f"{ma_summary_df['EV_EBITDA_Multiple'].std():.1f} std"
-            )
-        
-        with col2:
-            st.metric(
-                "Average Debt/EBITDA Ratio",
-                f"{ma_summary_df['Debt_EBITDA_Ratio'].mean():.1f}x",
-                f"{ma_summary_df['Debt_EBITDA_Ratio'].std():.1f} std"
-            )
-        
-        with col3:
-            st.metric(
-                "Average ROE",
-                f"{ma_summary_df['ROE_Percent'].mean():.1f}%",
-                f"{ma_summary_df['ROE_Percent'].std():.1f} std"
-            )
-
     # M&A Metric Analysis
     st.header("3. Detailed M&A Metric Analysis")
     
