@@ -325,7 +325,7 @@ def calculate_ma_metrics(company_data, selected_companies):
     return pd.DataFrame(ma_summary)
 
 # --- App Interface ---
-st.title("🇮🇩 M&A Decision Support Tool - Indonesian Companies")
+st.title("M&A Decision Support Tool - Indonesian Companies")
 st.markdown("**Comprehensive M&A Analysis for Food, Chemical, and Mobility Industries**")
 
 # Load embedded data
@@ -530,7 +530,7 @@ if selected_companies:
 
 
     # M&A Insights
-    st.header("7. M&A Insights")
+    st.header("5. M&A Insights")
     
     if not ma_summary_df.empty:
         # Industry analysis
