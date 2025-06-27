@@ -325,7 +325,7 @@ def calculate_ma_metrics(company_data, selected_companies):
     return pd.DataFrame(ma_summary)
 
 # --- App Interface ---
-st.title("M&A Decision Support Tool - Indonesian Companies")
+st.title("🇮🇩 M&A Decision Support Tool - Indonesian Companies")
 st.markdown("**Comprehensive M&A Analysis for Food, Chemical, and Mobility Industries**")
 
 # Load embedded data
@@ -367,31 +367,28 @@ if selected_companies:
         st.dataframe(ma_summary_df, use_container_width=True)
         
         # Key M&A Metrics Visualization
-      # Compute the metrics
-ev_mean = ma_summary_df['EV_EBITDA_Multiple'].mean()
-ev_std = ma_summary_df['EV_EBITDA_Multiple'].std()
-
-debt_mean = ma_summary_df['Debt_EBITDA_Ratio'].mean()
-debt_std = ma_summary_df['Debt_EBITDA_Ratio'].std()
-
-roe_mean = ma_summary_df['ROE_Percent'].mean()
-roe_std = ma_summary_df['ROE_Percent'].std()
-
-# Create a DataFrame for table display
-summary_stats = pd.DataFrame({
-    "Metric": ["EV/EBITDA Multiple", "Debt/EBITDA Ratio", "ROE (%)"],
-    "Average": [ev_mean, debt_mean, roe_mean],
-    "Standard Deviation": [ev_std, debt_std, roe_std]
-}).round(2)
-
-# Display the table
-st.subheader("Summary Metrics Table")
-st.dataframe(summary_stats, use_container_width=True)
-
-
-st.subheader("Summary Metrics Table")
-st.table(summary_stats)
-
+        col1, col2, col3 = st.columns(3)
+        st.subheader("Data Table")
+        with col1:
+            st.metric(
+                "Average EV/EBITDA Multiple",
+                f"{ma_summary_df['EV_EBITDA_Multiple'].mean():.1f}x",
+                f"{ma_summary_df['EV_EBITDA_Multiple'].std():.1f} std"
+            )
+        
+        with col2:
+            st.metric(
+                "Average Debt/EBITDA Ratio",
+                f"{ma_summary_df['Debt_EBITDA_Ratio'].mean():.1f}x",
+                f"{ma_summary_df['Debt_EBITDA_Ratio'].std():.1f} std"
+            )
+        
+        with col3:
+            st.metric(
+                "Average ROE",
+                f"{ma_summary_df['ROE_Percent'].mean():.1f}%",
+                f"{ma_summary_df['ROE_Percent'].std():.1f} std"
+            )
 
     # M&A Metric Analysis
     st.header("3. Detailed M&A Metric Analysis")
