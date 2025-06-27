@@ -325,7 +325,7 @@ def calculate_ma_metrics(company_data, selected_companies):
     return pd.DataFrame(ma_summary)
 
 # --- App Interface ---
-st.title("🇮🇩 M&A Decision Support Tool - Indonesian Companies")
+st.title("M&A Decision Support Tool - Indonesian Companies")
 st.markdown("**Comprehensive M&A Analysis for Food, Chemical, and Mobility Industries**")
 
 # Load embedded data
@@ -367,28 +367,23 @@ if selected_companies:
         st.dataframe(ma_summary_df, use_container_width=True)
         
         # Key M&A Metrics Visualization
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.metric(
-                "Average EV/EBITDA Multiple",
-                f"{ma_summary_df['EV_EBITDA_Multiple'].mean():.1f}x",
-                f"{ma_summary_df['EV_EBITDA_Multiple'].std():.1f} std"
-            )
-        
-        with col2:
-            st.metric(
-                "Average Debt/EBITDA Ratio",
-                f"{ma_summary_df['Debt_EBITDA_Ratio'].mean():.1f}x",
-                f"{ma_summary_df['Debt_EBITDA_Ratio'].std():.1f} std"
-            )
-        
-        with col3:
-            st.metric(
-                "Average ROE",
-                f"{ma_summary_df['ROE_Percent'].mean():.1f}%",
-                f"{ma_summary_df['ROE_Percent'].std():.1f} std"
-            )
+        summary_stats = pd.DataFrame({
+    "Metric": ["EV/EBITDA Multiple", "Debt/EBITDA Ratio", "ROE (%)"],
+    "Average": [
+        f"{ma_summary_df['EV_EBITDA_Multiple'].mean():.1f}x",
+        f"{ma_summary_df['Debt_EBITDA_Ratio'].mean():.1f}x",
+        f"{ma_summary_df['ROE_Percent'].mean():.1f}%"
+    ],
+    "Std Dev": [
+        f"{ma_summary_df['EV_EBITDA_Multiple'].std():.1f}",
+        f"{ma_summary_df['Debt_EBITDA_Ratio'].std():.1f}",
+        f"{ma_summary_df['ROE_Percent'].std():.1f}"
+    ]
+})
+
+st.subheader("Summary Metrics Table")
+st.table(summary_stats)
+
 
     # M&A Metric Analysis
     st.header("3. Detailed M&A Metric Analysis")
