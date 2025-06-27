@@ -528,49 +528,7 @@ if selected_companies:
                 st.subheader(f"Comparable Companies in {target_industry} Industry")
                 st.dataframe(industry_summary, use_container_width=True)
 
-    # M&A Risk Assessment
-    st.header("5. M&A Risk Assessment")
-    
-    if not ma_summary_df.empty:
-        st.subheader("Financial Health Indicators")
-        
-        # Create risk scoring
-        risk_df = ma_summary_df.copy()
-        
-        # Risk scoring logic
-        risk_df['Leverage_Risk'] = np.where(risk_df['Debt_EBITDA_Ratio'] > 3, 'High',
-                                   np.where(risk_df['Debt_EBITDA_Ratio'] > 2, 'Medium', 'Low'))
-        
-        risk_df['Valuation_Risk'] = np.where(risk_df['EV_EBITDA_Multiple'] > 12, 'High',
-                                    np.where(risk_df['EV_EBITDA_Multiple'] > 8, 'Medium', 'Low'))
-        
-        risk_df['Profitability_Risk'] = np.where(risk_df['ROE_Percent'] < 10, 'High',
-                                        np.where(risk_df['ROE_Percent'] < 15, 'Medium', 'Low'))
-        
-        # Display risk assessment
-        st.dataframe(risk_df[['Company', 'Industry', 'Leverage_Risk', 'Valuation_Risk', 'Profitability_Risk']], 
-                    use_container_width=True)
-        
-        # Risk visualization
-        fig = px.scatter(
-            risk_df,
-            x="EV_EBITDA_Multiple",
-            y="ROE_Percent",
-            size="EBITDA_2024",
-            color="Industry",
-            hover_data=['Company', 'Debt_EBITDA_Ratio'],
-            title="M&A Risk-Return Analysis",
-            labels={'EV_EBITDA_Multiple': 'Valuation Multiple (EV/EBITDA)', 
-                   'ROE_Percent': 'Return on Equity (%)'}
-        )
-        fig.add_hline(y=15, line_dash="dash", line_color="red", 
-                     annotation_text="ROE Threshold (15%)")
-        fig.add_vline(x=10, line_dash="dash", line_color="red", 
-                     annotation_text="EV/EBITDA Threshold (10x)")
-        
-        st.plotly_chart(fig, use_container_width=True)
-
-    # Export functionality
+     # Export functionality
     st.header("6. Export Analysis")
     
     col1, col2 = st.columns(2)
