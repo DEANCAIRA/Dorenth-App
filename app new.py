@@ -4,14 +4,13 @@ import plotly.express as px
 import numpy as np
 
 st.set_page_config(
-    page_title="M&A Dashboard",
+    page_title="M&A Decision Support Tool - Indonesian Companies",
     layout="wide"
 )
 
 # Load data
 def get_embedded_ma_data():
-    # This should be filled with the full embedded dataset logic
-    # For brevity, simulate a sample dictionary with simplified content
+    # [Simulated embedded data for demonstration. Replace with full embedded dataset logic.]
     return {
         "Food_PT_SampleCompany": pd.DataFrame([
             [0, "Year", "2020", "2021", "2022", "2023", "2024"],
@@ -21,7 +20,6 @@ def get_embedded_ma_data():
             [0, "ROE_Percent", 14, 15, 16, 17, 18]
         ])
     }
-
 
 def extract_metric(df, metric_name):
     df[1] = df[1].astype(str)
@@ -35,27 +33,31 @@ def extract_metric(df, metric_name):
     else:
         return pd.DataFrame({"Year": years, "Value": [None] * len(years)})
 
-
 def calculate_ma_metrics(company_data, selected_companies):
     ma_summary = []
     for company in selected_companies:
         if company in company_data:
             df = company_data[company]
             ebitda = extract_metric(df, "EBITDA")
+            revenue = extract_metric(df, "Revenue")
+            ev = extract_metric(df, "Enterprise_Value")
+            market_cap = extract_metric(df, "Market_Cap")
             ev_ebitda = extract_metric(df, "EV_EBITDA_Multiple")
             debt_ebitda = extract_metric(df, "Debt_EBITDA_Ratio")
             roe = extract_metric(df, "ROE_Percent")
             ma_summary.append({
                 "Company": company,
                 "EBITDA_2024": float(ebitda.iloc[-1]["Value"]),
+                "Revenue_2024": float(revenue.iloc[-1]["Value"]),
+                "Enterprise_Value_2024": float(ev.iloc[-1]["Value"]),
+                "Market_Cap_2024": float(market_cap.iloc[-1]["Value"]),
                 "EV_EBITDA_Multiple": float(ev_ebitda.iloc[-1]["Value"]),
                 "Debt_EBITDA_Ratio": float(debt_ebitda.iloc[-1]["Value"]),
                 "ROE_Percent": float(roe.iloc[-1]["Value"])
             })
     return pd.DataFrame(ma_summary)
 
-
-st.title("M&A Valuation Dashboard")
+st.title("🇮🇩 M&A Decision Support Tool - Indonesian Companies")
 
 company_data = get_embedded_ma_data()
 companies = list(company_data.keys())
@@ -63,25 +65,39 @@ selected_companies = st.multiselect("Select Companies", companies, default=compa
 
 if selected_companies:
     ma_df = calculate_ma_metrics(company_data, selected_companies)
-    st.subheader("Valuation Table")
+    st.subheader("M&A Valuation Dashboard")
     st.dataframe(ma_df, use_container_width=True)
 
     st.subheader("Valuation Statistics")
     stats = ma_df.describe().T[["mean", "std", "min", "max"]].round(2)
     st.dataframe(stats, use_container_width=True)
 
-    st.subheader("Metric Visualizations")
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("Avg EV/EBITDA", f"{stats.loc['EV_EBITDA_Multiple', 'mean']}x", f"{stats.loc['EV_EBITDA_Multiple', 'std']} std")
+        st.metric("Average EV/EBITDA", f"{stats.loc['EV_EBITDA_Multiple', 'mean']}x", f"{stats.loc['EV_EBITDA_Multiple', 'std']} std")
     with col2:
-        st.metric("Avg Debt/EBITDA", f"{stats.loc['Debt_EBITDA_Ratio', 'mean']}x", f"{stats.loc['Debt_EBITDA_Ratio', 'std']} std")
+        st.metric("Average Debt/EBITDA", f"{stats.loc['Debt_EBITDA_Ratio', 'mean']}x", f"{stats.loc['Debt_EBITDA_Ratio', 'std']} std")
     with col3:
-        st.metric("Avg ROE", f"{stats.loc['ROE_Percent', 'mean']}%", f"{stats.loc['ROE_Percent', 'std']} std")
+        st.metric("Average ROE", f"{stats.loc['ROE_Percent', 'mean']}%", f"{stats.loc['ROE_Percent', 'std']} std")
 
-    st.subheader("Chart: EV/EBITDA Distribution")
-    fig = px.bar(ma_df, x="Company", y="EV_EBITDA_Multiple")
-    st.plotly_chart(fig, use_container_width=True)
+    st.subheader("Trend Analysis")
+    metric_options = ["EBITDA", "Revenue", "Enterprise_Value", "Market_Cap", "EV_EBITDA_Multiple", "Debt_EBITDA_Ratio", "ROE_Percent"]
+    selected_metric = st.selectbox("Select Metric", metric_options)
+    trend_data = pd.DataFrame()
+
+    for company in selected_companies:
+        df = extract_metric(company_data[company], selected_metric)
+        df["Company"] = company
+        trend_data = pd.concat([trend_data, df], ignore_index=True)
+
+    trend_data.dropna(inplace=True)
+    trend_data["Value"] = pd.to_numeric(trend_data["Value"], errors='coerce')
+    trend_data.dropna(inplace=True)
+    st.plotly_chart(px.line(trend_data, x="Year", y="Value", color="Company", title=f"{selected_metric} Trend"), use_container_width=True)
 
 else:
     st.warning("Please select at least one company.")
+
+# Footer
+st.markdown("---")
+st.markdown("**M&A Decision Support Tool** | Indonesian Market Analysis | Financial data for educational purposes")
