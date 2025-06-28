@@ -1,3 +1,12 @@
+
+import streamlit as st
+
+st.set_page_config(
+    page_title="Your App Name",
+    page_icon="🚀",  # Use an emoji
+    layout="wide"
+)
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
