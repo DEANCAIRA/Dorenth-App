@@ -548,3 +548,28 @@ if selected_companies:
 # Footer
 st.markdown("---")
 st.markdown("**M&A Decision Support Tool** | Indonesian Market Analysis")
+# Combined footer
+footer_css = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
+.custom-footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(255,255,255,0.95);
+    text-align: center;
+    padding: 8px;
+    font-size: 11px;
+    color: #666;
+    border-top: 1px solid #eee;
+}
+</style>
+<div class="custom-footer">
+© 2025 Dorenth | Made using Python 🐍
+</div>
+"""
+st.markdown(footer_css, unsafe_allow_html=True)
