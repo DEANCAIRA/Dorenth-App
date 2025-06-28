@@ -2,7 +2,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Your App Name",
+    page_title="Max",
     page_icon="🚀",  # Use an emoji
     layout="wide"
 )
