@@ -547,6 +547,6 @@ if selected_companies:
         
 # Footer
 st.markdown("---")
-st.markdown(© 2025 Dorenth | Made using Python 🐍")
+st.markdown("© 2025 Dorenth | Made using Python 🐍")
 
 
